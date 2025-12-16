@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caixinha Entre Amigos - Sistema de Economia e Empréstimos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ==================== VARIÁVEIS E RESET ==================== */
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #E91E63;
+            --accent-color: #FF9800;
+            --light-color: #f8f9fa;
+            --dark-color: #333;
+            --success-color: #388E3C;
+            --warning-color: #FFC107;
+            --danger-color: #D32F2F;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f9f7f7 0%, #f0f0f0 100%);
+            color: var(--dark-color);
+            line-height: 1.6;
+            padding-top: 70px; /* Espaço para o menu fixo */
+        }
+        
+        /* ==================== MENU DE NAVEGAÇÃO FIXO ==================== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(90deg, var(--primary-color), #8BC34A);
+            color: white;
+            padding: 15px 20px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .navbar-logo i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 20px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* ==================== CONTAINER PRINCIPAL ==================== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* ==================== CABEÇALHO HERO ==================== */
+        .hero {
+            background: linear-gradient(90deg, var(--primary-color), #8BC34A);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: var(--shadow);
+        }
+        
+        .hero-content h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .hero-content p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
+        
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 25px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #FFEB3B;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* ==================== SEÇÕES ==================== */
+        .section {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--secondary-color);
+            transition: var(--transition);
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+        }
+        
+        .section-number {
+            display: inline-block;
+            background: var(--secondary-color);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        
+        /* ==================== CARDS DE INFORMAÇÃO ==================== */
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        .info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-top: 4px solid var(--primary-color);
+            transition: var(--transition);
+            height: 100%;
+        }
+        
+        .info-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-icon {
+            font-size: 45px;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .card-title {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        /* ==================== TABELAS ==================== */
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .table tr:hover {
+            background-color: #f1f8e9;
+        }
+        
+        /* ==================== CARDS DE SORTEIO ==================== */
+        .sorteios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        .sorteio-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #8BC34A 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sorteio-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: var(--transition);
+        }
+        
+        .sorteio-card:hover::before {
+            left: 100%;
+        }
+        
+        .sorteio-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .sorteio-icon {
+            font-size: 45px;
+            margin-bottom: 15px;
+            color: #FFEB3B;
+        }
+        
+        .sorteio-mes {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .condicao-sorteio {
+            background-color: #FFEB3B;
+            color: #333;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 15px;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+        
+        /* ==================== COMPROVANTES ==================== */
+        .comprovantes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        .comprovante-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+        
+        .comprovante-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .comprovante-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .comprovante-body {
+            padding: 20px;
+        }
+        
+        .comprovante-imagem-container {
+            position: relative;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .comprovante-imagem {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .comprovante-imagem-container:hover .comprovante-imagem {
+            transform: scale(1.05);
+        }
+        
+        .comprovante-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .comprovante-imagem-container:hover .comprovante-overlay {
+            opacity: 1;
+        }
+        
+        .comprovante-overlay i {
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .comprovante-info {
+            margin-bottom: 10px;
+        }
+        
+        .comprovante-info strong {
+            color: var(--primary-color);
+        }
+        
+        /* ==================== CONTATO ==================== */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+        
+        .contact-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--secondary-color);
+            transition: var(--transition);
+        }
+        
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .contact-icon {
+            font-size: 30px;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+        
+        .contact-info h4 {
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        /* ==================== BOTÕES ==================== */
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background: var(--success-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary-color);
+        }
+        
+        .btn-secondary:hover {
+            background: #C2185B;
+        }
+        
+        .btn-warning {
+            background: var(--warning-color);
+            color: #333;
+        }
+        
+        .btn-warning:hover {
+            background: #FFA000;
+        }
+        
+        .btn-print {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 999;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        /* ==================== ALERTAS ==================== */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid;
+            display: flex;
+            align-items: center;
+        }
+        
+        .alert i {
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .alert-warning {
+            background-color: #FFF3E0;
+            border-left-color: var(--warning-color);
+            color: #F57C00;
+        }
+        
+        .alert-success {
+            background-color: #E8F5E9;
+            border-left-color: var(--success-color);
+            color: var(--success-color);
+        }
+        
+        .alert-danger {
+            background-color: #FFEBEE;
+            border-left-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+        
+        /* ==================== MODAL DE IMAGEM ==================== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1100;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .modal-close:hover {
+            color: var(--secondary-color);
+            transform: rotate(90deg);
+        }
+        
+        .modal-caption {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: white;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.7);
+        }
+        
+        /* ==================== RODAPÉ ==================== */
+        .footer {
+            background: linear-gradient(90deg, var(--primary-color), #8BC34A);
+            color: white;
+            padding: 40px 20px;
+            margin-top: 50px;
+            text-align: center;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-logo {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+        
+        .footer-info {
+            margin: 20px 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .social-icons {
+            margin-top: 20px;
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 10px;
+            transition: var(--transition);
+        }
+        
+        .social-icons a:hover {
+            color: #FFEB3B;
+            transform: translateY(-5px);
+        }
+        
+        /* ==================== RESPONSIVIDADE ==================== */
+        @media (max-width: 992px) {
+            .hero-content h1 {
+                font-size: 2.3rem;
+            }
+            
+            .info-cards, .sorteios-grid, .comprovantes-grid, .contact-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-wrap: wrap;
+            }
+            
+            .nav-links {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                margin-top: 20px;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .nav-links li {
+                margin: 10px 0;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-content p {
+                font-size: 1.1rem;
+            }
+            
+            .hero-stats {
+                gap: 15px;
+            }
+            
+            .stat-item {
+                padding: 10px 15px;
+            }
+            
+            .btn-print {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero {
+                padding: 40px 15px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .info-cards, .sorteios-grid, .comprovantes-grid, .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu de Navegação Fixo -->
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <i class="fas fa-piggy-bank"></i>
+            <span>Caixinha Entre Amigos</span>
+        </div>
+        
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#inicio">Início</a></li>
+            <li><a href="#como-funciona">Como Funciona</a></li>
+            <li><a href="#sistema-cotas">Sistema de Cotas</a></li>
+            <li><a href="#emprestimos">Empréstimos</a></li>
+            <li><a href="#sorteios">Sorteios</a></li>
+            <li><a href="#comprovantes">Comprovantes</a></li>
+            <li><a href="#contato">Contato</a></li>
+        </ul>
+    </nav>
+
+    <!-- Botão de Imprimir -->
+    <button class="btn btn-warning btn-print" id="printBtn" title="Imprimir documento">
+        <i class="fas fa-print"></i>
+    </button>
+
+    <!-- Modal para visualização de imagens -->
+    <div class="modal" id="imageModal">
+        <span class="modal-close" id="modalClose">&times;</span>
+        <img class="modal-content" id="modalImage" alt="Imagem ampliada">
+        <div class="modal-caption" id="modalCaption"></div>
+    </div>
+
+    <div class="container">
+        <!-- Seção Hero / Início -->
+        <section id="inicio" class="hero">
+            <div class="hero-content">
+                <h1>CAIXINHA ENTRE AMIGOS</h1>
+                <p>Sistema de Economia e Empréstimos Colaborativos</p>
+                <p><i class="fas fa-chart-line"></i> Guarde dinheiro, faça empréstimos e lucre!</p>
+                
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">15</div>
+                        <div class="stat-label">Cotas Disponíveis</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">R$ 100/mês</div>
+                        <div class="stat-label">Valor por Cota</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">2026</div>
+                        <div class="stat-label">Vigência</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Como Funciona -->
+        <section id="como-funciona" class="section">
+            <h2 class="section-title">
+                <span class="section-number">1</span>
+                <i class="fas fa-cogs"></i> Como Funciona a Caixinha
+            </h2>
+            <div class="section-content">
+                <p>A <strong>Caixinha Entre Amigos</strong> é um sistema de economia colaborativa onde os participantes guardam dinheiro mensalmente e têm a oportunidade de fazer empréstimos que geram rendimento através de juros.</p>
+                
+                <div class="info-cards">
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-title">Estrutura</div>
+                        <div class="card-content">
+                            <p><strong>15 cotas no total</strong><br>
+                            Cada membro pode ter até <strong>3 cotas individuais</strong><br>
+                            Valor por cota: <strong>R$ 100/mês</strong><br>
+                            Total anual por cota: <strong>R$ 1.200</strong></p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="card-title">Período</div>
+                        <div class="card-content">
+                            <p><strong>Vigência:</strong><br>
+                            20 de janeiro a 20 de dezembro de 2026<br><br>
+                            <strong>Pagamento das cotas:</strong><br>
+                            Todo dia <strong>30</strong> de cada mês</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <div class="card-title">Responsável</div>
+                        <div class="card-content">
+                            <p><strong>Juliane Silva</strong><br><br>
+                            Organizadora e administradora da caixinha, garantindo transparência e organização em todas as operações.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sistema de Cotas -->
+        <section id="sistema-cotas" class="section">
+            <h2 class="section-title">
+                <span class="section-number">2</span>
+                <i class="fas fa-table"></i> Sistema de Cotas
+            </h2>
+            <div class="section-content">
+                <p>A caixinha possui <strong>15 cotas disponíveis</strong>. Cada participante pode adquirir até <strong>3 cotas individuais</strong>. O valor mensal por cota é fixo, totalizando um investimento anual previsível.</p>
+                
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nº de Cotas por Participante</th>
+                                <th>Valor Mensal por Cota</th>
+                                <th>Total Mensal</th>
+                                <th>Total Anual (12 meses)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1 Cota</td>
+                                <td>R$ 100,00</td>
+                                <td>R$ 100,00</td>
+                                <td>R$ 1.200,00</td>
+                            </tr>
+                            <tr>
+                                <td>2 Cotas</td>
+                                <td>R$ 100,00</td>
+                                <td>R$ 200,00</td>
+                                <td>R$ 2.400,00</td>
+                            </tr>
+                            <tr>
+                                <td>3 Cotas</td>
+                                <td>R$ 100,00</td>
+                                <td>R$ 300,00</td>
+                                <td>R$ 3.600,00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="alert alert-success">
+                    <i class="fas fa-info-circle"></i> <strong>Total de cotas disponíveis:</strong> 15 cotas (limite máximo da caixinha)
+                </div>
+            </div>
+        </section>
+
+        <!-- Empréstimos e Juros -->
+        <section id="emprestimos" class="section">
+            <h2 class="section-title">
+                <span class="section-number">3</span>
+                <i class="fas fa-money-bill-wave"></i> Empréstimos e Sistema de Juros
+            </h2>
+            <div class="section-content">
+                <p>Os participantes podem fazer empréstimos para terceiros, gerando rendimentos através dos juros cobrados. Este é o principal mecanismo de geração de lucro na caixinha.</p>
+                
+                <div class="info-cards">
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="card-title">Distribuição dos Juros</div>
+                        <div class="card-content">
+                            <p><strong>Do valor total dos empréstimos:</strong><br><br>
+                            • <strong>15%</strong> para a caixinha (comissão)<br>
+                            • <strong>15%</strong> para o participante que realizou o empréstimo<br>
+                            • <strong>70%</strong> retorna ao capital da caixinha</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="card-title">Responsabilidade</div>
+                        <div class="card-content">
+                            <p>O participante que realiza o empréstimo assume total responsabilidade pelo:<br><br>
+                            • Acompanhamento do pagamento<br>
+                            • Cobrança dos valores emprestados<br>
+                            • Gestão do relacionamento com o tomador</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="card-title">Benefício</div>
+                        <div class="card-content">
+                            <p>Os empréstimos são uma <strong>forma legítima de arrecadação</strong> para o participante, permitindo que ele lucre com a operação enquanto contribui para o crescimento do capital da caixinha.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i> <strong>Importante:</strong> O participante deve selecionar cuidadosamente para quem empresta, assumindo o risco do empréstimo.
+                </div>
+            </div>
+        </section>
+
+        <!-- Vencimento e Penalidades -->
+        <section id="vencimento" class="section">
+            <h2 class="section-title">
+                <span class="section-number">4</span>
+                <i class="fas fa-calendar-times"></i> Vencimento e Penalidades por Atraso
+            </h2>
+            <div class="section-content">
+                <p>O pagamento das cotas vence no <strong>dia 30 de cada mês</strong>. Atrasos são rigorosamente penalizados para manter a saúde financeira da caixinha.</p>
+                
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i> <strong>ATENÇÃO AOS JUROS POR ATRASO:</strong>
+                </div>
+                
+                <div class="info-cards">
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="card-title">Juros de Atraso</div>
+                        <div class="card-content">
+                            <p><strong>30% ao mês</strong> sobre o valor em débito.<br><br>
+                            Se o atraso persistir, aplica-se <strong>juros sobre juros</strong> (juros compostos) mensalmente.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div class="card-title">Exemplo Prático</div>
+                        <div class="card-content">
+                            <p><strong>Dívida inicial:</strong> R$ 100,00<br><br>
+                            • <strong>1º mês de atraso:</strong><br>
+                            R$ 100,00 + 30% = R$ 130,00<br><br>
+                            • <strong>2º mês de atraso:</strong><br>
+                            R$ 130,00 + 30% = R$ 169,00</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
+                        <div class="card-title">Recomendação</div>
+                        <div class="card-content">
+                            <p><strong>PAGUE RIGOROSAMENTE EM DIA!</strong><br><br>
+                            O sistema de juros sobre juros pode gerar valores exorbitantes rapidamente. A disciplina no pagamento é essencial.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-calendar-check"></i> <strong>Dia do vencimento:</strong> 30 de cada mês. Pagamentos via depósito ou PIX para Juliane Silva.
+                </div>
+            </div>
+        </section>
+
+        <!-- Sorteios Anuais -->
+        <section id="sorteios" class="section">
+            <h2 class="section-title">
+                <span class="section-number">5</span>
+                <i class="fas fa-gift"></i> Sorteios Anuais
+            </h2>
+            <div class="section-content">
+                <p>Além do sistema de empréstimos, a caixinha realiza <strong>4 sorteios por ano</strong> como forma adicional de distribuição de rendimentos. A participação nos sorteios está condicionada ao pagamento em dia das cotas.</p>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle"></i> <strong>ATENÇÃO: PARTICIPAÇÃO NOS SORTEIOS!</strong><br>
+                    Cada membro <strong>DEVE COMPRAR 7 NÚMEROS POR SORTEIO</strong> no valor de <strong>R$ 20,00 cada número</strong>. O prêmio de cada sorteio é de <strong>R$ 500,00</strong>.
+                </div>
+                
+                <div class="sorteios-grid">
+                    <div class="sorteio-card">
+                        <div class="sorteio-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="sorteio-mes">FEVEREIRO</div>
+                        <div class="sorteio-info">Sorteio do Carnaval</div>
+                        <div class="sorteio-info">Data: 28 de Fevereiro</div>
+                        <div class="sorteio-info">Prêmio: R$ 500,00</div>
+                        <div class="condicao-sorteio">EXCLUSIVO PARA QUITADOS</div>
+                    </div>
+                    
+                    <div class="sorteio-card">
+                        <div class="sorteio-icon">
+                            <i class="fas fa-sun"></i>
+                        </div>
+                        <div class="sorteio-mes">MAIO</div>
+                        <div class="sorteio-info">Sorteio de Outono</div>
+                        <div class="sorteio-info">Data: 28 de Maio</div>
+                        <div class="sorteio-info">Prêmio: R$ 500,00</div>
+                        <div class="condicao-sorteio">EXCLUSIVO PARA QUITADOS</div>
+                    </div>
+                    
+                    <div class="sorteio-card">
+                        <div class="sorteio-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="sorteio-mes">AGOSTO</div>
+                        <div class="sorteio-info">Sorteio do Inverno</div>
+                        <div class="sorteio-info">Data: 28 de Agosto</div>
+                        <div class="sorteio-info">Prêmio: R$ 500,00</div>
+                        <div class="condicao-sorteio">EXCLUSIVO PARA QUITADOS</div>
+                    </div>
+                    
+                    <div class="sorteio-card">
+                        <div class="sorteio-icon">
+                            <i class="fas fa-tree"></i>
+                        </div>
+                        <div class="sorteio-mes">NOVEMBRO</div>
+                        <div class="sorteio-info">Sorteio da Primavera</div>
+                        <div class="sorteio-info">Data: 28 de Novembro</div>
+                        <div class="sorteio-info">Prêmio: R$ 500,00</div>
+                        <div class="condicao-sorteio">EXCLUSIVO PARA QUITADOS</div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-danger" style="margin-top: 20px;">
+                    <i class="fas fa-exclamation-triangle"></i> <strong>CONDIÇÃO OBRIGATÓRIA:</strong> O participante premiado só receberá o prêmio se estiver em DIA com todas as suas obrigações de pagamento junto à caixinha. Caso contrário, perderá o direito ao prêmio.
+                </div>
+            </div>
+        </section>
+
+        <!-- Desistência -->
+        <section id="desistencia" class="section">
+            <h2 class="section-title">
+                <span class="section-number">6</span>
+                <i class="fas fa-sign-out-alt"></i> Desistência
+            </h2>
+            <div class="section-content">
+                <p>Caso um participante deseje sair da caixinha, aplicam-se as seguintes regras:</p>
+                
+                <div class="info-cards">
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-title">Sem Débitos</div>
+                        <div class="card-content">
+                            <p>Se o participante <strong>NÃO tiver débitos</strong>:<br><br>
+                            Receberá <strong>50% do valor total</strong> que investiu na caixinha.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="card-title">Com Débitos</div>
+                        <div class="card-content">
+                            <p>Se o participante <strong>AINDA tiver débitos</strong>:<br><br>
+                            <strong>PERDERÁ TODO O VALOR INVESTIDO</strong>, sem direito a qualquer reembolso.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-file-contract"></i>
+                        </div>
+                        <div class="card-title">Processamento</div>
+                        <div class="card-content">
+                            <p>A desistência só será processada <strong>após a quitação total</strong> de eventuais dívidas junto à caixinha.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-danger">
+                    <i class="fas fa-hand-paper"></i> <strong>ATENÇÃO:</strong> A desistência com débitos pendentes resulta na perda TOTAL do valor investido.
+                </div>
+            </div>
+        </section>
+
+        <!-- Comprovantes e Transparência -->
+        <section id="comprovantes" class="section">
+            <h2 class="section-title">
+                <span class="section-number">7</span>
+                <i class="fas fa-receipt"></i> Comprovantes e Transparência - Histórico 2025
+            </h2>
+            <div class="section-content">
+                <p>Aqui estão os registros financeiros e comprovantes de pagamento do ano de 2025, demonstrando a transparência e seriedade da nossa caixinha:</p>
+                
+                <div class="comprovantes-grid">
+                    <!-- Comprovante 1 - Alessandra -->
+                    <div class="comprovante-card">
+                        <div class="comprovante-header">Alessandra Emilly Dantas Silva</div>
+                        <div class="comprovante-body">
+                            <div class="comprovante-imagem-container" data-image="alessandra.jpg" data-caption="Alessandra Emilly - R$ 1.650,00">
+                                <img src="alessandra.jpg" alt="Comprovante Alessandra" class="comprovante-imagem">
+                                <div class="comprovante-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                            <div class="comprovante-info"><strong>Data:</strong> 01/12/2025 - 22:45:23</div>
+                            <div class="comprovante-info"><strong>Valor:</strong> R$ 1.650,00</div>
+                            <div class="comprovante-info"><strong>Tipo:</strong> Pix</div>
+                            <div class="comprovante-info"><strong>Instituição:</strong> NU PAGAMENTOS - IP</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Comprovante 2 - Edson -->
+                    <div class="comprovante-card">
+                        <div class="comprovante-header">Edson Portal Silva</div>
+                        <div class="comprovante-body">
+                            <div class="comprovante-imagem-container" data-image="edson.jpg" data-caption="Edson Portal - R$ 1.500,00">
+                                <img src="edson.jpg" alt="Comprovante Edson" class="comprovante-imagem">
+                                <div class="comprovante-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                            <div class="comprovante-info"><strong>Data:</strong> 10/12/2025 - 12:37:33</div>
+                            <div class="comprovante-info"><strong>Valor:</strong> R$ 1.500,00</div>
+                            <div class="comprovante-info"><strong>Tipo:</strong> Pix</div>
+                            <div class="comprovante-info"><strong>Instituição:</strong> CAIXA ECONOMICA FEDERAL</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Comprovante 3 - Eliziane -->
+                    <div class="comprovante-card">
+                        <div class="comprovante-header">Eliziane da Silva Lima</div>
+                        <div class="comprovante-body">
+                            <div class="comprovante-imagem-container" data-image="eliziane.jpg" data-caption="Eliziane Lima - R$ 1.250,00">
+                                <img src="eliziane.jpg" alt="Comprovante Eliziane" class="comprovante-imagem">
+                                <div class="comprovante-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                            <div class="comprovante-info"><strong>Data:</strong> 10/12/2025 - 13:52:52</div>
+                            <div class="comprovante-info"><strong>Valor:</strong> R$ 1.250,00</div>
+                            <div class="comprovante-info"><strong>Tipo:</strong> Pix</div>
+                            <div class="comprovante-info"><strong>Instituição:</strong> NU PAGAMENTOS - IP</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Comprovante 4 - Mardyson -->
+                    <div class="comprovante-card">
+                        <div class="comprovante-header">Mardyson Felipe Silva Fontes</div>
+                        <div class="comprovante-body">
+                            <div class="comprovante-imagem-container" data-image="mardyson.jpg" data-caption="Mardyson Felipe - R$ 1.790,00">
+                                <img src="mardyson.jpg" alt="Comprovante Mardyson" class="comprovante-imagem">
+                                <div class="comprovante-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                            <div class="comprovante-info"><strong>Data:</strong> 10/12/2025 - 12:32:58</div>
+                            <div class="comprovante-info"><strong>Valor:</strong> R$ 1.790,00</div>
+                            <div class="comprovante-info"><strong>Tipo:</strong> Pix</div>
+                            <div class="comprovante-info"><strong>Instituição:</strong> NU PAGAMENTOS S.A.</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Comprovante 5 - Maycon -->
+                    <div class="comprovante-card">
+                        <div class="comprovante-header">Maycom Portal Silva</div>
+                        <div class="comprovante-body">
+                            <div class="comprovante-imagem-container" data-image="maycon.jpg" data-caption="Maycon Portal - R$ 2.126,00">
+                                <img src="maycon.jpg" alt="Comprovante Maycon" class="comprovante-imagem">
+                                <div class="comprovante-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                            <div class="comprovante-info"><strong>Data:</strong> 10/12/2025 - 12:41:15</div>
+                            <div class="comprovante-info"><strong>Valor:</strong> R$ 2.126,00</div>
+                            <div class="comprovante-info"><strong>Tipo:</strong> Pix</div>
+                            <div class="comprovante-info"><strong>Instituição:</strong> CAIXA ECONOMICA FEDERAL</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Comprovante 6 - Elaine -->
+                    <div class="comprovante-card">
+                        <div class="comprovante-header">Elaine Fernanda Lima Braga</div>
+                        <div class="comprovante-body">
+                            <div class="comprovante-imagem-container" data-image="elaine.jpg" data-caption="Elaine Fernanda - R$ 2.837,00">
+                                <img src="elaine.jpg" alt="Comprovante Elaine" class="comprovante-imagem">
+                                <div class="comprovante-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                            <div class="comprovante-info"><strong>Data:</strong> 10/12/2025 - 12:55:05</div>
+                            <div class="comprovante-info"><strong>Valor:</strong> R$ 2.837,00</div>
+                            <div class="comprovante-info"><strong>Tipo:</strong> Pix</div>
+                            <div class="comprovante-info"><strong>Instituição:</strong> CAIXA ECONÔMICA FEDERAL</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-success" style="margin-top: 20px;">
+                    <i class="fas fa-shield-alt"></i> <strong>Transparência Total:</strong> Todos os registros financeiros são mantidos de forma organizada e disponíveis para consulta. Os participantes podem solicitar esclarecimentos sobre qualquer movimentação.
+                </div>
+            </div>
+        </section>
+
+        <!-- Contato -->
+        <section id="contato" class="section">
+            <h2 class="section-title">
+                <span class="section-number">8</span>
+                <i class="fas fa-address-book"></i> Contato e Informações
+            </h2>
+            
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Responsável</h4>
+                        <p>Juliane Silva</p>
+                    </div>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>E-mail</h4>
+                        <p>silvajuliane210@gmail.com</p>
+                    </div>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Telefone/WhatsApp</h4>
+                        <p>+55 91 8506-0894</p>
+                    </div>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fab fa-instagram"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Instagram</h4>
+                        <p>@caixinhaentreamigos</p>
+                    </div>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Dados Bancários</h4>
+                        <p>Itaú - Ag: 1580 - C/C: 0060850-1</p>
+                    </div>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>PIX</h4>
+                        <p>silvajuliane210@gmail.com</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-success" style="margin-top: 25px;">
+                <i class="fas fa-calendar-check"></i> <strong>Prazo para pagamento:</strong> Até o dia 30 de cada mês, via depósito ou PIX.
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="#inicio" class="btn btn-secondary">
+                    <i class="fas fa-arrow-up"></i> Voltar ao Topo
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fas fa-piggy-bank"></i> Caixinha Entre Amigos
+            </div>
+            <p>© 2026 - Sistema de Economia e Empréstimos Colaborativos</p>
+            <div class="footer-info">
+                <p>Vigência: 20/01/2026 a 20/12/2026 | 15 cotas disponíveis | Valor por cota: R$ 100/mês</p>
+                <p>Documento informativo sobre o funcionamento da caixinha</p>
+            </div>
+            <div class="social-icons">
+                <a href="#" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="mailto:silvajuliane210@gmail.com" title="E-mail"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ==================== FUNCIONALIDADES JAVASCRIPT ====================
+        
+        // Menu Mobile
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileMenuBtn.innerHTML = navLinks.classList.contains('active') 
+                ? '<i class="fas fa-times"></i>' 
+                : '<i class="fas fa-bars"></i>';
+        });
+        
+        // Fechar menu ao clicar em um link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            });
+        });
+        
+        // Modal de Imagens
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalCaption = document.getElementById('modalCaption');
+        const modalClose = document.getElementById('modalClose');
+        
+        // Abrir modal ao clicar nas imagens
+        document.querySelectorAll('.comprovante-imagem-container').forEach(container => {
+            container.addEventListener('click', () => {
+                const imageSrc = container.getAttribute('data-image');
+                const caption = container.getAttribute('data-caption');
+                
+                modalImage.src = imageSrc;
+                modalCaption.textContent = caption;
+                imageModal.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Previne scroll
+            });
+        });
+        
+        // Fechar modal
+        modalClose.addEventListener('click', () => {
+            imageModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+        
+        // Fechar modal ao clicar fora da imagem
+        imageModal.addEventListener('click', (e) => {
+            if (e.target === imageModal) {
+                imageModal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Fechar modal com tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && imageModal.classList.contains('active')) {
+                imageModal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Botão de Imprimir
+        const printBtn = document.getElementById('printBtn');
+        
+        printBtn.addEventListener('click', () => {
+            window.print();
+        });
+        
+        // Adicionar classe ativa ao menu conforme scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav-links a');
+            
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                
+                if (scrollY >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+        
+        // Efeito de digitação no título (opcional)
+        const heroTitle = document.querySelector('.hero-content h1');
+        const originalText = heroTitle.textContent;
+        heroTitle.textContent = '';
+        
+        let i = 0;
+        const typeWriter = () => {
+            if (i < originalText.length) {
+                heroTitle.textContent += originalText.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50);
+            }
+        };
+        
+        // Iniciar efeito de digitação quando a página carregar
+        window.addEventListener('load', () => {
+            setTimeout(typeWriter, 500);
+        });
+        
+        // Animação de contadores nas estatísticas
+        const statValues = document.querySelectorAll('.stat-value');
+        
+        const animateCounter = (element, target) => {
+            let current = 0;
+            const increment = target / 100;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 20);
+        };
+        
+        // Observador para animar contadores quando visíveis
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    statValues.forEach(stat => {
+                        const target = parseInt(stat.textContent);
+                        if (!isNaN(target)) {
+                            animateCounter(stat, target);
+                        }
+                    });
+                    observer.disconnect();
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        observer.observe(document.querySelector('.hero-stats'));
+    </script>
+</body>
+</html>
